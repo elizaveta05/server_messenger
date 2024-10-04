@@ -1,9 +1,17 @@
 package com.example.server_messenger.Model;
 
-public class UsersModel {
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "users_profile")
+public class UsersProfile {
+    @Id
     private String userId;
     private String login;
     private String phoneNumber;
+    private String imageUrl;
 
     public String getUserId() {
         return userId;
@@ -27,5 +35,13 @@ public class UsersModel {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }
