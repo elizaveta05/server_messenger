@@ -71,4 +71,18 @@ public class UsersController {
         }
     }
 
+    // Метод обновления данных профиля пользователя
+    @PutMapping("/updateUserProfile/{userId}")
+    public ResponseEntity<UsersProfile> updateUserProfile(@PathVariable String userId, @RequestBody UsersProfile updatedUserProfile) {
+        logger.info("Вызван метод обновления профиля пользователя - {}", userId);
+
+        UsersProfile updatedUser = usersService.updateUserProfile(userId, updatedUserProfile);
+
+        if (updatedUser != null) {
+            return ResponseEntity.ok(updatedUser);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
+
 }

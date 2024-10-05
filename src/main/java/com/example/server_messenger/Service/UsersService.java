@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -47,4 +48,23 @@ public class UsersService {
             return false; // Ошибка удаление
         }
     }
+
+    // Метод обновления данных профиля пользователя
+    public UsersProfile updateUserProfile(String userId, UsersProfile updatedUserProfile) {
+        Optional<UsersProfile> existingUserOptional = userRepository.findById(userId);
+        if (existingUserOptional.isPresent()) {
+            UsersProfile existingUser = existingUserOptional.get();
+
+            // Обновляем поля существующего пользователя
+            existingUser.setImageUrl(updatedUserProfile.getImageUrl());
+            existingUser.setLogin(updatedUserProfile.getLogin());
+
+            // Сохраняем обновленного пользователя
+            return userRepository.save(existingUser);
+        } else {
+            logger.warn("Пользователь с ID {} не найден для обновления", userId);
+            return null;
+        }
+    }
+
 }
