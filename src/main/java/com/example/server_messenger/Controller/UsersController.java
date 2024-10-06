@@ -38,8 +38,6 @@ public class UsersController {
 
         List<String> userLogins = usersService.getUsersLogins();
 
-        logger.info("Существующие логины: {}", userLogins);
-
         return ResponseEntity.ok(userLogins);  // Возвращаем список логинов с кодом 200 OK
     }
 
