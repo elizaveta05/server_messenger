@@ -2,11 +2,11 @@ package com.example.server_messenger.Controller;
 
 import com.example.server_messenger.Model.UsersProfile;
 import com.example.server_messenger.Service.UsersService;
-import org.apache.catalina.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,15 +20,43 @@ public class UsersController {
     @Autowired
     private UsersService usersService;
 
-    //Метод добавления пользователя в БД
-    @PostMapping("/createUser")
-    public ResponseEntity<UsersProfile> createUser(@RequestBody UsersProfile newUser) {
-        logger.info("Вызван метод контроллера по добавлению пользователя с данными");
+    @PostMapping(value = "/createUser", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> createUser(
+            @RequestPart("userId") String userId,
+            @RequestPart("login") String login,
+            @RequestPart("phoneNumber") String phoneNumber,
+            @RequestPart(value = "image_url", required = false) String imageUrl) {
 
+        logger.info("Вызван метод контроллера по добавлению пользователя с данными и изображением");
+
+        // Проверка обязательных параметров
+        if (userId == null || userId.isEmpty()) {
+            return ResponseEntity.badRequest().body("Параметр 'userId' обязателен.");
+        }
+        if (login == null || login.isEmpty()) {
+            return ResponseEntity.badRequest().body("Параметр 'login' обязателен.");
+        }
+        if (phoneNumber == null || phoneNumber.isEmpty()) {
+            return ResponseEntity.badRequest().body("Параметр 'phoneNumber' обязателен.");
+        }
+
+        // Создаем профиль пользователя
+        UsersProfile newUser = new UsersProfile();
+        newUser.setUserId(userId);
+        newUser.setLogin(login);
+        newUser.setPhoneNumber(phoneNumber);
+
+        // Установка URL изображения, если он существует
+        if (imageUrl != null) {
+            newUser.setImage_url(imageUrl);
+        } else {
+            newUser.setImage_url(null);
+        }
+
+        // Сохранение пользователя в базе данных
         UsersProfile createdUser = usersService.createUser(newUser);
-
         logger.info("Создан новый пользователь: {}", createdUser);
-        return ResponseEntity.ok(createdUser);  // Возвращаем созданного пользователя с кодом 200 OK
+        return ResponseEntity.ok(createdUser);
     }
 
     // Метод для получения всех логинов уже существующих пользователей

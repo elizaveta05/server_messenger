@@ -56,7 +56,7 @@ public class UsersService {
             UsersProfile existingUser = existingUserOptional.get();
 
             // Обновляем поля существующего пользователя
-            existingUser.setImageUrl(updatedUserProfile.getImageUrl());
+            //existingUser.setImageUrl(updatedUserProfile.getImageUrl());
             existingUser.setLogin(updatedUserProfile.getLogin());
 
             // Сохраняем обновленного пользователя

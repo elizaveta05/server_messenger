@@ -1,7 +1,5 @@
 package com.example.server_messenger.Controller;
 
-import com.example.server_messenger.Service.FirebaseService;
-import com.example.server_messenger.Service.UsersService;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
@@ -9,16 +7,9 @@ import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
@@ -50,7 +41,7 @@ public class FirebaseController {
             logger.error("Ошибка инициализации Firebase Admin SDK", e);
         }
     }
-
+/*
     @PostMapping("/uploadImage")
     public ResponseEntity<String> saveImageFromStorage(
             @RequestParam String userId,
@@ -59,10 +50,13 @@ public class FirebaseController {
 
         try {
             String imageUrl = firebaseService.uploadImageToStorage(imageFile, userId);
+            logger.info("Ответ от контролера ", imageUrl);
             return ResponseEntity.ok(imageUrl);
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error uploading file");
         }
     }
+
+ */
 
 }

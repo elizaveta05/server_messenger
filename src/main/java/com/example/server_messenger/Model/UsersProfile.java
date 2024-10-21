@@ -1,8 +1,6 @@
 package com.example.server_messenger.Model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "users_profile")
@@ -11,8 +9,10 @@ public class UsersProfile {
     private String userId;
     private String login;
     private String phoneNumber;
-    private String imageUrl;
+    private String image_url;
 
+
+    // Геттеры и сеттеры
     public String getUserId() {
         return userId;
     }
@@ -37,11 +37,11 @@ public class UsersProfile {
         this.phoneNumber = phoneNumber;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
+    public String getImage_url(){
+        return image_url;
     }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public void setImage_url(String image_url){
+        this.image_url=image_url;
     }
 }
