@@ -83,6 +83,22 @@ public class UsersController {
         }
     }
 
+    // Метод, который проверяет есть ли такой номер телефона в базе
+    @GetMapping("/getPhoneNumber/{phoneNumber}")
+    public boolean getPhoneNumber(@PathVariable String phoneNumber)
+    {
+        logger.info("Вызван метод, который проверяет наличие телефона в базе");
+
+        boolean exists = usersService.getPhoneNumber(phoneNumber);
+        if (exists) {
+            // Номер телефона уже существует
+            return true;
+        } else {
+            // Номер телефона свободен
+            return false;
+        }
+    }
+
     // Метод удаления пользователя из БД
     @DeleteMapping("/deleteProfileUser/{userId}")
     public ResponseEntity<String> deleteProfileUser(@PathVariable String userId) {

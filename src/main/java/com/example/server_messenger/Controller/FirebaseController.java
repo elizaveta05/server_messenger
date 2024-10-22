@@ -18,8 +18,7 @@ import java.io.IOException;
 public class FirebaseController {
 
     private static final Logger logger = LoggerFactory.getLogger(FirebaseController.class);
-    @Autowired
-    private FirebaseService firebaseService;
+
     // Инициализация Firebase Admin SDK для взаимодействия с Firestore.
     @PostConstruct
     public void initFirebaseApp() {

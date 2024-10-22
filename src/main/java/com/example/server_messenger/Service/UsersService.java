@@ -38,6 +38,16 @@ public class UsersService {
         return userRepository.findById(userId).orElse(null);
     }
 
+    // Метод проверки номера телефона на наличие в базе
+    public boolean getPhoneNumber(String phoneNumber)
+    {
+        // Ищем пользователя по номеру телефона
+        Optional<UsersProfile> user = userRepository.findByPhoneNumber(phoneNumber);
+
+        // Возвращаем true, если номер телефона есть в бд, иначе false
+        return user.isPresent();
+    }
+
     //Метод удаления пользователя из БД
     public boolean deleteProfileUserFromDB(String userId){
         try {
@@ -56,7 +66,7 @@ public class UsersService {
             UsersProfile existingUser = existingUserOptional.get();
 
             // Обновляем поля существующего пользователя
-            //existingUser.setImageUrl(updatedUserProfile.getImageUrl());
+            existingUser.setImage_url(updatedUserProfile.getImage_url());
             existingUser.setLogin(updatedUserProfile.getLogin());
 
             // Сохраняем обновленного пользователя
