@@ -68,6 +68,7 @@ public class UsersService {
             // Обновляем поля существующего пользователя
             existingUser.setImage_url(updatedUserProfile.getImage_url());
             existingUser.setLogin(updatedUserProfile.getLogin());
+            existingUser.setPhoneNumber(updatedUserProfile.getPhoneNumber());
 
             // Сохраняем обновленного пользователя
             return userRepository.save(existingUser);

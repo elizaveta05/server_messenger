@@ -11,7 +11,6 @@ public class UsersProfile {
     private String phoneNumber;
     private String image_url;
 
-
     // Геттеры и сеттеры
     public String getUserId() {
         return userId;
