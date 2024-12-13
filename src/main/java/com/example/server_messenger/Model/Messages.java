@@ -3,8 +3,6 @@ package com.example.server_messenger.Model;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import org.w3c.dom.Text;
-
 import java.sql.Timestamp;
 
 @Entity
@@ -14,7 +12,7 @@ public class Messages {
     private Integer message_id;
     private Integer chat_id;
     private String user_send;
-    private Text message_text; // Исправлено на message_text
+    private String message_text;
     private Timestamp time_created;
 
     // Геттеры и сеттеры
@@ -42,11 +40,11 @@ public class Messages {
         this.user_send = user_send;
     }
 
-    public Text getMessageText() {
+    public String getMessageText() {
         return message_text;
     }
 
-    public void setMessageText(Text message_text) {
+    public void setMessageText(String message_text) {
         this.message_text = message_text;
     }
 
