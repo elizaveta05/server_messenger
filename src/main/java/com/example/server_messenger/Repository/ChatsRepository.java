@@ -1,18 +1,23 @@
 package com.example.server_messenger.Repository;
 
 import com.example.server_messenger.Model.Chats;
-import com.example.server_messenger.Model.UsersProfile;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public interface ChatsRepository extends JpaRepository<ChatsRepository, Integer> {
-    // Метод для поиска чатов пользователя по userId
-    List<Chats> findChatsByUserId(String userId);
+public interface ChatsRepository extends JpaRepository<Chats, Integer> {
 
-    //Метод получения id чата по id пользователей
-    Chats findChatByUser1IdAndUser2Id(String user1_id, String user2_id);
+    @Query("SELECT c FROM Chats c WHERE (c.chat_user_owner = :user1 AND c.other_user = :user2) " +
+            "OR (c.chat_user_owner = :user2 AND c.other_user = :user1)")
+    List<Chats> findChatsBetweenUsers(@Param("user1") String user1, @Param("user2") String user2);
+
+
+    @Query("SELECT c FROM Chats c WHERE c.chat_user_owner = :userId OR c.other_user = :userId")
+    List<Chats> findChatForUser(@Param("userId") String userId);
+
 
 }

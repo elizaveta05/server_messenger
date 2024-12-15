@@ -1,19 +1,23 @@
 package com.example.server_messenger.Model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+
 import java.sql.Timestamp;
 
 @Entity
 @Table(name = "messages")
 public class Messages {
+
+    //В базе будет создано по 2 записи по одному сообщению
+
     @Id
-    private Integer message_id;
-    private Integer chat_id;
-    private String user_send;
-    private String message_text;
-    private Timestamp time_created;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer message_id; //Идентификатор сообщения
+    private Integer chat_id; //Идентификатор чата в котором содержится сообщение,
+    // так как записи чата будет 2, то поэтому эта переменная будет меняться
+    private String sender_user; //Пользователь отправитель
+    private String message_text; //Текст сообщения
+    private Timestamp time_stamp; //Время отправки сообщения
 
     // Геттеры и сеттеры
     public Integer getMessageId() {
@@ -33,11 +37,11 @@ public class Messages {
     }
 
     public String getUserSend() {
-        return user_send;
+        return sender_user;
     }
 
-    public void setUserSend(String user_send) {
-        this.user_send = user_send;
+    public void setUserSend(String sender_user) {
+        this.sender_user = sender_user;
     }
 
     public String getMessageText() {
@@ -48,11 +52,11 @@ public class Messages {
         this.message_text = message_text;
     }
 
-    public Timestamp getTimeCreated() {
-        return time_created;
+    public Timestamp getTime_stamp() {
+        return time_stamp;
     }
 
-    public void setTimeCreated(Timestamp time_created) {
-        this.time_created = time_created;
+    public void setTimeCreated(Timestamp time_stamp) {
+        this.time_stamp = time_stamp;
     }
 }

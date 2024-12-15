@@ -1,50 +1,53 @@
 package com.example.server_messenger.Model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 @Entity
 @Table(name = "chats")
 public class Chats {
+
+    //В базе будет создано по 2 записи с одного чата
+
     @Id
-    private Integer chat_id;
-    private String user1_id;
-    private String user2_id;
-    private Date time_created;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer chats_id; //Идентификатор чата
+    private String chat_user_owner; //Владелец чата
+    private String other_user; //Другой участник чата
+    private Timestamp time_created; //Время создания чата
 
     // Геттеры и сеттеры
     public Integer getChatId() {
-        return chat_id;
+        return chats_id;
     }
 
-    public void setChatId(Integer chat_id) {
-        this.chat_id = chat_id;
+    public void setChatId(Integer chats_id) {
+        this.chats_id = chats_id;
     }
 
-    public String getUser1Id() {
-        return user1_id;
+    public String getChat_user_owner() {
+        return chat_user_owner;
     }
 
-    public void setUser1Id(String user1_id) {
-        this.user1_id = user1_id;
+    public void setChat_user_owner(String chat_user_owner) {
+        this.chat_user_owner = chat_user_owner;
     }
 
-    public String getUser2Id() {
-        return user2_id;
+    public String getOther_user() {
+        return other_user;
     }
 
-    public void setUser2Id(String user2_id) {
-        this.user2_id = user2_id;
+    public void setOther_user(String other_user) {
+        this.other_user = other_user;
     }
 
-    public Date getTimeCreated() {
+    public Timestamp getTimeCreated() {
         return time_created;
     }
 
-    public void setTimeCreated(Date time_created) {
+    public void setTimeCreated(Timestamp time_created) {
         this.time_created = time_created;
     }
 }

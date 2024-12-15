@@ -1,6 +1,7 @@
 package com.example.server_messenger.Service;
 
 import com.example.server_messenger.Controller.UsersController;
+import com.example.server_messenger.Model.DTO.UserInfo;
 import com.example.server_messenger.Model.UsersProfile;
 import com.example.server_messenger.Repository.UserRepository;
 import org.slf4j.Logger;
@@ -8,7 +9,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -76,6 +79,30 @@ public class UsersService {
             logger.warn("Пользователь с ID {} не найден для обновления", userId);
             return null;
         }
+    }
+
+    // Метод получения информации о пользователях по их ID
+    public Map<String, UserInfo> getUsersInfoByIds(List<String> userIds) {
+        Map<String, UserInfo> userInfoMap = new HashMap<>();
+
+        try {
+            // Получаем всех пользователей с указанными ID
+            List<UsersProfile> users = userRepository.findAllById(userIds);
+
+            // Преобразуем список пользователей в карту
+            for (UsersProfile user : users) {
+                UserInfo userInfo = new UserInfo();
+                userInfo.setLogin(user.getLogin());
+                userInfo.setImageUrl(user.getImage_url());
+
+                userInfoMap.put(user.getUserId(), userInfo);
+            }
+
+        } catch (Exception ex) {
+            logger.error("Ошибка при получении информации о пользователях: {}", ex.getMessage());
+        }
+
+        return userInfoMap;
     }
 
 }

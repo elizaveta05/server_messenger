@@ -1,7 +1,8 @@
 package com.example.server_messenger.Service;
 
+import com.example.server_messenger.Model.DTO.MessagesDTO;
 import com.example.server_messenger.Model.Messages;
-import com.example.server_messenger.Repository.MessagesRepository; // Импортируйте ваш репозиторий
+import com.example.server_messenger.Repository.MessagesRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,24 +17,34 @@ public class MessageService {
     @Autowired
     private MessagesRepository messagesRepository;
 
-    // Метод для получения сообщений по chat_id
-    public List<Messages> getMessagesByChatId(Integer chatId) {
-        logger.info("Получение сообщений для чата с ID: {}", chatId);
-        List<Messages> messages = messagesRepository.findByChatId(chatId);
-
-        if (messages != null && !messages.isEmpty()) {
-            logger.info("Найдено {} сообщений для чата с ID {}", messages.size(), chatId);
-        } else {
-            logger.warn("Сообщения не найдены для чата с ID {}", chatId);
-        }
-        return messages;
-    }
-
     // Метод для сохранения сообщения
-    public Messages saveMessage(Messages message) {
+    public void saveMessage(MessagesDTO messageDTO) {
+        Messages message = new Messages();
+        message.setChatId(messageDTO.getChatId());
+        message.setUserSend(messageDTO.getUserSend());
+        message.setMessageText(messageDTO.getMessageText());
+        message.setTimeCreated(messageDTO.getTimeStamp());
+
         Messages savedMessage = messagesRepository.save(message);
         logger.info("Сообщение сохранено с ID {}", savedMessage.getMessageId());
-        return savedMessage;
     }
 
+    // Метод для получения последнего сообщения в чате
+    public Messages findLastMessageInChat(Integer chatId) {
+        try {
+            // Получаем последнее сообщение по времени из чата
+            Messages lastMessage = messagesRepository.findTopByChatIdOrderByTimeCreatedDesc(chatId);
+
+            if (lastMessage != null) {
+                logger.info("Последнее сообщение в чате {} найдено: {}", chatId, lastMessage.getMessageText());
+                return lastMessage;
+            } else {
+                logger.warn("В чате {} сообщений не найдено", chatId);
+                return null;
+            }
+        } catch (Exception ex) {
+            logger.error("Ошибка при поиске последнего сообщения в чате {}: {}", chatId, ex.getMessage());
+            return null;
+        }
+    }
 }

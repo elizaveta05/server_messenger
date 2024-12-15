@@ -1,56 +1,153 @@
 package com.example.server_messenger.Controller;
 
 import com.example.server_messenger.Model.Chats;
+import com.example.server_messenger.Model.DTO.*;
+import com.example.server_messenger.Model.Messages;
 import com.example.server_messenger.Service.ChatsService;
+import com.example.server_messenger.Service.MessageService;
 import com.example.server_messenger.Service.UsersService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.w3c.dom.Text;
 
+import java.sql.Timestamp;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/chats")
 public class ChatsController {
     private static final Logger logger = LoggerFactory.getLogger(ChatsController.class);
+
     @Autowired
-    private ChatsService chatsService;
+    private final ChatsService chatsService;
+    private final UsersService usersService;
+    private final MessageService messageService;
 
-    // Метод получения чатов пользователя
-    @GetMapping("/getChatsByUser")
-    public ResponseEntity<List<Chats>> getUsersChat(@RequestParam String userId) {
-        logger.info("Вызван метод контроллера для получения чатов пользователя - {}", userId);
-
-        List<Chats> userChats = chatsService.getChatsByUser(userId);
-
-        if (userChats != null && !userChats.isEmpty()) {
-            return ResponseEntity.ok(userChats);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    public ChatsController(ChatsService chatsService, UsersService usersService, MessageService messageService) {
+        this.chatsService = chatsService;
+        this.usersService = usersService;
+        this.messageService = messageService;
     }
 
-    // Метод получения id чата
-    @GetMapping("/getChatByUsers")
-    public ResponseEntity<Integer> getChat(@RequestParam String user1_id, @RequestParam String user2_id) {
-        logger.info("Запрос на получение чата для пользователей: {} и {}", user1_id, user2_id);
-
-        Integer chat_id = chatsService.getChatByUsers(user1_id, user2_id).getChatId();
-
-        if (chat_id <= 0) {
-            return ResponseEntity.ok(chat_id);
-        } else {
-            return ResponseEntity.notFound().build();
+    @PostMapping("/createChatAndSendMessage")
+    public ResponseEntity<?> createChatAndSendMessage(@RequestParam String chatUserOwner,
+                                                      @RequestParam String otherUser,
+                                                      @RequestParam String messageText,
+                                                      @RequestParam Timestamp timeCreated) {
+        if (chatUserOwner == null || otherUser == null || messageText == null || timeCreated == null) {
+            logger.error("Некорректные данные: один или несколько параметров null");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid input data.");
         }
+
+        // Проверка существующих чатов
+        List<Chats> existingChats = chatsService.findChatsBetweenUsers(chatUserOwner, otherUser);
+
+        Integer chatId1 = null;
+        Integer chatId2 = null;
+
+        if (existingChats.isEmpty()) {
+            // Создаем два чата
+            chatId1 = chatsService.createChat(chatUserOwner, otherUser, timeCreated);
+            chatId2 = chatsService.createChat(otherUser, chatUserOwner, timeCreated);
+            logger.info("Созданы два чата с ID: {} и {}", chatId1, chatId2);
+        } else if (existingChats.size() == 1) {
+            // Если один из чатов отсутствует
+            Chats existingChat = existingChats.get(0);
+            if (existingChat.getChat_user_owner().equals(chatUserOwner)) {
+                chatId1 = existingChat.getChatId();
+                chatId2 = chatsService.createChat(otherUser, chatUserOwner, timeCreated);
+                logger.info("Создан недостающий чат с ID: {}", chatId2);
+            } else {
+                chatId2 = existingChat.getChatId();
+                chatId1 = chatsService.createChat(chatUserOwner, otherUser, timeCreated);
+                logger.info("Создан недостающий чат с ID: {}", chatId1);
+            }
+        } else {
+            // Если оба чата существуют
+            chatId1 = existingChats.get(0).getChatId();
+            chatId2 = existingChats.get(1).getChatId();
+            logger.info("Чаты уже существуют с ID: {} и {}", chatId1, chatId2);
+        }
+
+        // Сохранение сообщения в обоих чатах
+        MessagesDTO message1 = new MessagesDTO();
+        message1.setChatId(chatId1);
+        message1.setUserSend(chatUserOwner);
+        message1.setMessageText(messageText);
+        message1.setTimeStamp(timeCreated);
+
+        MessagesDTO message2 = new MessagesDTO();
+        message2.setChatId(chatId2);
+        message2.setUserSend(chatUserOwner);
+        message2.setMessageText(messageText);
+        message2.setTimeStamp(timeCreated);
+
+        messageService.saveMessage(message1);
+        messageService.saveMessage(message2);
+
+        logger.info("Сообщение сохранено в чатах с ID: {} и {}", chatId1, chatId2);
+
+        return ResponseEntity.ok("Чаты и сообщения успешно созданы.");
     }
 
+    @GetMapping("/getAllChatsForUser")
+    public ResponseEntity<?> getAllChatsForUser(@RequestParam String userId) {
+        if (userId == null || userId.isEmpty()) {
+            logger.error("Некорректные данные: userId равен null или пуст");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid input data.");
+        }
 
+        // Находим все чаты, которыми владеет пользователь
+        List<ChatsDTO> chats = chatsService.findChatForUser(userId);
 
+        if (chats.isEmpty()) {
+            logger.info("Чаты для пользователя {} не найдены", userId);
+            return ResponseEntity.status(HttpStatus.OK).body("No chats found for the user.");
+        }
 
+        // Сбор идентификаторов других пользователей (с кем есть чат)
+        List<String> otherUserIds = chats.stream()
+                .map(chat -> chat.getChatUserOwner().equals(userId) ? chat.getOtherUser() : chat.getChatUserOwner())
+                .distinct()
+                .toList();
+
+        // Получаем данные о других пользователях
+        Map<String, UserInfo> userInfoMap = usersService.getUsersInfoByIds(otherUserIds);
+
+        // Сбор данных о последних сообщениях
+        List<RecentChats> recentChats = chats.stream().map(chat -> {
+            RecentChats recentChat = new RecentChats();
+            String otherUserId = chat.getChatUserOwner().equals(userId) ? chat.getOtherUser() : chat.getChatUserOwner();
+
+            // Настройка данных о другом пользователе
+            UserInfo otherUserInfo = userInfoMap.get(otherUserId);
+            if (otherUserInfo != null) {
+                recentChat.setUserId(otherUserId);
+                recentChat.setLogin(otherUserInfo.getLogin());
+                recentChat.setImageUrl(otherUserInfo.getImageUrl());
+            }
+
+            // Получение последнего сообщения
+            Messages lastMessage = messageService.findLastMessageInChat(chat.getChatId());
+            if (lastMessage != null) {
+                recentChat.setUserSend(lastMessage.getUserSend());
+                recentChat.setMessageText(lastMessage.getMessageText());
+                recentChat.setTimeStamp(lastMessage.getTime_stamp());
+            }
+
+            recentChat.setChatId(chat.getChatId());
+            return recentChat;
+        }).toList();
+
+        logger.info("Список чатов для пользователя {} успешно собран", userId);
+        return ResponseEntity.status(HttpStatus.OK).body(recentChats);
+    }
 
 }
