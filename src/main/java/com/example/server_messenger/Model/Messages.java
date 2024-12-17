@@ -17,7 +17,7 @@ public class Messages {
     // так как записи чата будет 2, то поэтому эта переменная будет меняться
     private String sender_user; //Пользователь отправитель
     private String message_text; //Текст сообщения
-    private Timestamp time_stamp; //Время отправки сообщения
+    private String time_stamp; //Время отправки сообщения
 
     // Геттеры и сеттеры
     public Integer getMessageId() {
@@ -52,11 +52,12 @@ public class Messages {
         this.message_text = message_text;
     }
 
-    public Timestamp getTime_stamp() {
+    public String getTimeStamp() {
         return time_stamp;
     }
 
-    public void setTimeCreated(Timestamp time_stamp) {
+    public void setTimeStamp(String time_stamp) {
         this.time_stamp = time_stamp;
     }
+
 }

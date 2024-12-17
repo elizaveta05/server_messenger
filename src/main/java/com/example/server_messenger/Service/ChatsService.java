@@ -44,7 +44,7 @@ public class ChatsService {
 
     // Метод для поиска чатов одного пользователя
     public List<ChatsDTO> findChatForUser(String userId) {
-        List<Chats> chats = chatsRepository.findChatForUser(userId);
+        List<Chats> chats = chatsRepository.findByChatUserOwner(userId);
         // Преобразуем сущности Chats в DTO
         return chats.stream()
                 .map(chat -> new ChatsDTO(chat.getChatId(), chat.getChat_user_owner(), chat.getOther_user()))

@@ -15,9 +15,7 @@ public interface ChatsRepository extends JpaRepository<Chats, Integer> {
             "OR (c.chat_user_owner = :user2 AND c.other_user = :user1)")
     List<Chats> findChatsBetweenUsers(@Param("user1") String user1, @Param("user2") String user2);
 
-
-    @Query("SELECT c FROM Chats c WHERE c.chat_user_owner = :userId OR c.other_user = :userId")
-    List<Chats> findChatForUser(@Param("userId") String userId);
-
+    @Query("SELECT c FROM Chats c WHERE c.chat_user_owner = :chatUserOwner")
+    List<Chats> findByChatUserOwner(@Param("chatUserOwner") String chatUserOwner);
 
 }

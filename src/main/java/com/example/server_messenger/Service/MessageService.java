@@ -17,13 +17,18 @@ public class MessageService {
     @Autowired
     private MessagesRepository messagesRepository;
 
+    public MessageService(MessagesRepository messagesRepository) {
+        this.messagesRepository = messagesRepository;
+    }
+
+
     // Метод для сохранения сообщения
     public void saveMessage(MessagesDTO messageDTO) {
         Messages message = new Messages();
         message.setChatId(messageDTO.getChatId());
         message.setUserSend(messageDTO.getUserSend());
         message.setMessageText(messageDTO.getMessageText());
-        message.setTimeCreated(messageDTO.getTimeStamp());
+        message.setTimeStamp(messageDTO.getTimeStamp());
 
         Messages savedMessage = messagesRepository.save(message);
         logger.info("Сообщение сохранено с ID {}", savedMessage.getMessageId());
@@ -33,7 +38,7 @@ public class MessageService {
     public Messages findLastMessageInChat(Integer chatId) {
         try {
             // Получаем последнее сообщение по времени из чата
-            Messages lastMessage = messagesRepository.findTopByChatIdOrderByTimeCreatedDesc(chatId);
+            Messages lastMessage = messagesRepository.findTopByChatIdOrderByTimeStampDesc(chatId);
 
             if (lastMessage != null) {
                 logger.info("Последнее сообщение в чате {} найдено: {}", chatId, lastMessage.getMessageText());

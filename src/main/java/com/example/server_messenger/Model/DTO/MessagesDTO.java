@@ -9,7 +9,7 @@ public class MessagesDTO {
     private Integer chatId; // Идентификатор чата
     private String userSend; // Пользователь-отправитель
     private String messageText; // Текст сообщения
-    private Timestamp timeStamp; // Время отправки сообщения
+    private String timeStamp; // Время отправки сообщения
 
     // Геттеры и сеттеры
     public Integer getMessageId() {
@@ -44,11 +44,11 @@ public class MessagesDTO {
         this.messageText = messageText;
     }
 
-    public java.sql.Timestamp getTimeStamp() {
+    public String getTimeStamp() {
         return timeStamp;
     }
 
-    public void setTimeStamp(Timestamp timeStamp) {
+    public void setTimeStamp(String timeStamp) {
         this.timeStamp = timeStamp;
     }
 }

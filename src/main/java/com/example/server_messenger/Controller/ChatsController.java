@@ -81,13 +81,13 @@ public class ChatsController {
         message1.setChatId(chatId1);
         message1.setUserSend(chatUserOwner);
         message1.setMessageText(messageText);
-        message1.setTimeStamp(timeCreated);
+        message1.setTimeStamp(String.valueOf(timeCreated));
 
         MessagesDTO message2 = new MessagesDTO();
         message2.setChatId(chatId2);
         message2.setUserSend(chatUserOwner);
         message2.setMessageText(messageText);
-        message2.setTimeStamp(timeCreated);
+        message2.setTimeStamp(String.valueOf(timeCreated));
 
         messageService.saveMessage(message1);
         messageService.saveMessage(message2);
@@ -139,7 +139,7 @@ public class ChatsController {
             if (lastMessage != null) {
                 recentChat.setUserSend(lastMessage.getUserSend());
                 recentChat.setMessageText(lastMessage.getMessageText());
-                recentChat.setTimeStamp(lastMessage.getTime_stamp());
+                recentChat.setTimeStamp(lastMessage.getTimeStamp());
             }
 
             recentChat.setChatId(chat.getChatId());

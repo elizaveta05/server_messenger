@@ -10,7 +10,7 @@ public class RecentChats {
     private String image_url;
     private String userSend; // Пользователь-отправитель
     private String messageText; // Текст сообщения
-    private Timestamp timeStamp; // Время отправки сообщения
+    private String timeStamp; // Время отправки сообщения
 
     // Геттеры
     public Integer getChatId() {
@@ -37,7 +37,7 @@ public class RecentChats {
         return messageText;
     }
 
-    public Timestamp getTimeStamp() {
+    public String getTimeStamp() {
         return timeStamp;
     }
 
@@ -66,7 +66,7 @@ public class RecentChats {
         this.messageText = messageText;
     }
 
-    public void setTimeStamp(Timestamp timeStamp) {
+    public void setTimeStamp(String timeStamp) {
         this.timeStamp = timeStamp;
     }
 }
