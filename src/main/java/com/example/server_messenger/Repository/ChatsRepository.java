@@ -18,4 +18,7 @@ public interface ChatsRepository extends JpaRepository<Chats, Integer> {
     @Query("SELECT c FROM Chats c WHERE c.chat_user_owner = :chatUserOwner")
     List<Chats> findByChatUserOwner(@Param("chatUserOwner") String chatUserOwner);
 
+    @Query("SELECT COUNT(c) > 0 FROM Chats c WHERE c.chat_user_owner = :chatUserOwner AND c.chats_id = :chatId")
+    boolean existsByChatUserOwnerAndChatId(@Param("chatUserOwner") String chatUserOwner, @Param("chatId") Integer chatId);
+
 }

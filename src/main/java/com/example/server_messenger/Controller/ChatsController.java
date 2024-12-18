@@ -52,7 +52,7 @@ public class ChatsController {
         Integer chatId1 = null;
         Integer chatId2 = null;
 
-        if (existingChats.isEmpty()) {
+        if (existingChats.size() == 0) {
             // Создаем два чата
             chatId1 = chatsService.createChat(chatUserOwner, otherUser, timeCreated);
             chatId2 = chatsService.createChat(otherUser, chatUserOwner, timeCreated);
@@ -124,12 +124,12 @@ public class ChatsController {
         // Сбор данных о последних сообщениях
         List<RecentChats> recentChats = chats.stream().map(chat -> {
             RecentChats recentChat = new RecentChats();
-            String otherUserId = chat.getChatUserOwner().equals(userId) ? chat.getOtherUser() : chat.getChatUserOwner();
+            String otherUserId = chat.getOtherUser();
 
             // Настройка данных о другом пользователе
             UserInfo otherUserInfo = userInfoMap.get(otherUserId);
             if (otherUserInfo != null) {
-                recentChat.setUserId(otherUserId);
+                recentChat.setUserId(userId);
                 recentChat.setLogin(otherUserInfo.getLogin());
                 recentChat.setImageUrl(otherUserInfo.getImageUrl());
             }
@@ -148,6 +148,40 @@ public class ChatsController {
 
         logger.info("Список чатов для пользователя {} успешно собран", userId);
         return ResponseEntity.status(HttpStatus.OK).body(recentChats);
+    }
+
+    @Transactional
+    @DeleteMapping("/deleteChat")
+    public ResponseEntity<?> deleteChatByUser(@RequestParam String userId, @RequestParam Integer chatId) {
+        logger.info("Вызван метод удаления чата {} у пользователя {}", chatId, userId);
+
+        // Проверяем наличие чата с таким владельцем
+        boolean chatIsPresent = chatsService.checkChat(userId, chatId);
+        if (!chatIsPresent) {
+            logger.error("Чат с указанным владельцем не найден. Удаление невозможно.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Чат не найден или пользователь не является владельцем.");
+        }
+
+        // Проверяем, есть ли сообщения в чате
+        boolean hasMessages = chatsService.hasMessagesInChat(chatId);
+        if (hasMessages) {
+            logger.error("Чат содержит сообщения. .");
+        }
+
+        boolean messagesDeleted = messageService.deleteMessagesByChatId(chatId);
+        if (!messagesDeleted) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ошибка при удалении сообщений.");
+        }
+
+        // Удаляем чат
+        boolean chatDeleted = chatsService.deleteChat(chatId);
+        if (!chatDeleted) {
+            logger.error("Не удалось удалить чат.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ошибка при удалении чата.");
+        }
+
+        logger.info("Чат {} успешно удален пользователем {}", chatId, userId);
+        return ResponseEntity.ok("Чат успешно удален.");
     }
 
 }

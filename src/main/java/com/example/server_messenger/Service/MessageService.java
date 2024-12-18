@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -37,8 +38,7 @@ public class MessageService {
     // Метод для получения последнего сообщения в чате
     public Messages findLastMessageInChat(Integer chatId) {
         try {
-            // Получаем последнее сообщение по времени из чата
-            Messages lastMessage = messagesRepository.findTopByChatIdOrderByTimeStampDesc(chatId);
+            Messages lastMessage = messagesRepository.findLastMessageInChat(chatId);
 
             if (lastMessage != null) {
                 logger.info("Последнее сообщение в чате {} найдено: {}", chatId, lastMessage.getMessageText());
@@ -50,6 +50,19 @@ public class MessageService {
         } catch (Exception ex) {
             logger.error("Ошибка при поиске последнего сообщения в чате {}: {}", chatId, ex.getMessage());
             return null;
+        }
+    }
+
+    @Transactional
+    public boolean deleteMessagesByChatId(Integer chatId) {
+        try {
+            messagesRepository.deleteByChatId(chatId);
+            return true;
+        } catch (Exception ex) {
+            // Логируем ошибку
+            Logger logger = LoggerFactory.getLogger(MessageService.class);
+            logger.error("Ошибка при удалении сообщений из чата {}: {}", chatId, ex.getMessage());
+            return false;
         }
     }
 }

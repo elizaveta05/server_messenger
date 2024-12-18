@@ -3,6 +3,7 @@ package com.example.server_messenger.Service;
 import com.example.server_messenger.Model.Chats;
 import com.example.server_messenger.Model.DTO.ChatsDTO;
 import com.example.server_messenger.Repository.ChatsRepository;
+import com.example.server_messenger.Repository.MessagesRepository;
 import com.example.server_messenger.Repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,10 +20,12 @@ public class ChatsService {
     private static final Logger logger = LoggerFactory.getLogger(UsersService.class);
 
     private final ChatsRepository chatsRepository;
+    private final MessagesRepository messagesRepository;
     private final MessageService messagesService;
 
-    public ChatsService(ChatsRepository chatsRepository, MessageService messagesService) {
+    public ChatsService(ChatsRepository chatsRepository, MessagesRepository messagesRepository, MessageService messagesService) {
         this.chatsRepository = chatsRepository;
+        this.messagesRepository = messagesRepository;
         this.messagesService = messagesService;
     }
 
@@ -51,6 +54,32 @@ public class ChatsService {
                 .toList();
     }
 
+    /**
+     * Проверяет, является ли пользователь владельцем чата.
+     */
+    public boolean checkChat(String userId, Integer chatId) {
+        return chatsRepository.existsByChatUserOwnerAndChatId(userId, chatId);
+    }
+
+    /**
+     * Проверяет, есть ли сообщения в указанном чате.
+     */
+    public boolean hasMessagesInChat(Integer chatId) {
+        return messagesRepository.countMessagesByChatId(chatId) > 0;
+    }
+
+    /**
+     * Удаляет чат по его ID.
+     */
+    public boolean deleteChat(Integer chatId) {
+        try {
+            chatsRepository.deleteById(chatId);
+            return true;
+        } catch (Exception ex) {
+            logger.error("Ошибка при удалении чата {}: {}", chatId, ex.getMessage());
+            return false;
+        }
+    }
 
 }
 
