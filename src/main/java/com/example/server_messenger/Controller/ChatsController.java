@@ -129,7 +129,7 @@ public class ChatsController {
             // Настройка данных о другом пользователе
             UserInfo otherUserInfo = userInfoMap.get(otherUserId);
             if (otherUserInfo != null) {
-                recentChat.setUserId(userId);
+                recentChat.setUserId(otherUserInfo.getUser_id());
                 recentChat.setLogin(otherUserInfo.getLogin());
                 recentChat.setImageUrl(otherUserInfo.getImageUrl());
             }
@@ -183,5 +183,24 @@ public class ChatsController {
         logger.info("Чат {} успешно удален пользователем {}", chatId, userId);
         return ResponseEntity.ok("Чат успешно удален.");
     }
+
+    @GetMapping("/getChatId")
+    public ResponseEntity<?> getChatId(@RequestParam("chatUserOwner") String chatUserOwner,
+                                       @RequestParam("otherUser") String otherUser) {
+        if (chatUserOwner == null || otherUser == null) {
+            logger.error("Некорректные данные: один или оба параметра null");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Некорректные данные");
+        }
+
+        Chats chat = chatsService.findChatForUser(chatUserOwner, otherUser);
+        if (chat == null) {
+            logger.info("Чат между пользователем {} и собеседником {} не найден", chatUserOwner, otherUser);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Чат не найден");
+        }
+
+        logger.info("Чат между пользователем {} и собеседником {} найден: chatId = {}", chatUserOwner, otherUser, chat.getChatId());
+        return ResponseEntity.ok(chat.getChatId());
+    }
+
 
 }

@@ -13,6 +13,7 @@ import java.util.List;
 
 @Service
 public class MessageService {
+
     private static final Logger logger = LoggerFactory.getLogger(MessageService.class);
 
     @Autowired
@@ -53,6 +54,7 @@ public class MessageService {
         }
     }
 
+    // Метод удаления всех сообщений в чате при удаления чата
     @Transactional
     public boolean deleteMessagesByChatId(Integer chatId) {
         try {
@@ -65,4 +67,22 @@ public class MessageService {
             return false;
         }
     }
+
+    // Метод, получающий историю сообщений в чате
+    public List<Messages> findMessageHistory(Integer chatId) {
+        try {
+            List<Messages> messages = messagesRepository.findMessagesByChatId(chatId);
+            if (!messages.isEmpty()) {
+                logger.info("Найдено {} сообщений в чате {}", messages.size(), chatId);
+                return messages;
+            } else {
+                logger.warn("В чате {} сообщений не найдено", chatId);
+                return List.of(); // Возвращаем пустой список
+            }
+        } catch (Exception ex) {
+            logger.error("Ошибка при получении истории сообщений для чата {}: {}", chatId, ex.getMessage());
+            return List.of(); // Возвращаем пустой список в случае ошибки
+        }
+    }
+
 }

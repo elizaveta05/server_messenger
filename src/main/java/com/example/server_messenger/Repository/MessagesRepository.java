@@ -23,4 +23,8 @@ public interface MessagesRepository extends JpaRepository<Messages, Integer> {
     @Modifying
     @Query(value = "DELETE FROM messages WHERE chat_id = :chatId", nativeQuery = true)
     void deleteByChatId(@Param("chatId") Integer chatId);
+
+    @Query(value = "SELECT * FROM messages WHERE chat_id = :chatId ORDER BY time_stamp ASC", nativeQuery = true)
+    List<Messages> findMessagesByChatId(@Param("chatId") Integer chatId);
+
 }

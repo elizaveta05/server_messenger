@@ -34,6 +34,11 @@ public class ChatsService {
         return chatsRepository.findChatsBetweenUsers(user1, user2);
     }
 
+    // Метод для поиска чата между владельцем и собеседником
+    public Chats findChatForUser(String user1, String user2) {
+        return chatsRepository.findChat(user1, user2);
+    }
+
     // Метод для создания чата с возвратом идентификатора
     @Transactional
     public Integer createChat(String chatUserOwner, String otherUser, Timestamp timeCreated) {

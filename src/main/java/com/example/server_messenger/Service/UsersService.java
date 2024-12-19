@@ -92,6 +92,7 @@ public class UsersService {
             // Преобразуем список пользователей в карту
             for (UsersProfile user : users) {
                 UserInfo userInfo = new UserInfo();
+                userInfo.setUser_id(user.getUserId());
                 userInfo.setLogin(user.getLogin());
                 userInfo.setImageUrl(user.getImage_url());
 
