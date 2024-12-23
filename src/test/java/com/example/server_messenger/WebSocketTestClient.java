@@ -6,6 +6,7 @@ import org.springframework.web.socket.messaging.WebSocketStompClient;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 
 import java.lang.reflect.Type;
+import java.sql.Timestamp;
 import java.util.Scanner;
 
 public class WebSocketTestClient {
@@ -111,14 +112,16 @@ public class WebSocketTestClient {
         private String chatUserOwner;
         private String otherUser;
         private String messageText;
+        private Timestamp timeCreated; // Новое поле
 
         public MessagePayload(String chatUserOwner, String otherUser, String messageText) {
             this.chatUserOwner = chatUserOwner;
             this.otherUser = otherUser;
             this.messageText = messageText;
+            this.timeCreated = new Timestamp(System.currentTimeMillis()); // Инициализация текущей временной меткой
         }
 
-        // Геттеры и сеттеры
+        // Геттеры и сеттеры для всех полей
         public String getChatUserOwner() {
             return chatUserOwner;
         }
@@ -142,6 +145,13 @@ public class WebSocketTestClient {
         public void setMessageText(String messageText) {
             this.messageText = messageText;
         }
-    }
 
+        public Timestamp getTimeCreated() {
+            return timeCreated;
+        }
+
+        public void setTimeCreated(Timestamp timeCreated) {
+            this.timeCreated = timeCreated;
+        }
+    }
 }
