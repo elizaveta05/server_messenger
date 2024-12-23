@@ -44,14 +44,17 @@ public class MessageController {
 
         // Получаем историю сообщений
         List<Messages> messageHistory = messageService.findMessageHistory(chatId);
-        if (messageHistory.isEmpty()) {
-            logger.info("В чате {} сообщений не найдено", chatId);
-            return ResponseEntity.ok(0); // Возвращаем 0, если сообщений нет
+        if (messageHistory == null || messageHistory.isEmpty()) {
+            logger.info("Сообщений не найдено для чата {}", chatId);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Сообщений не найдено"); // Более понятный ответ
         }
+        logger.info("Отправляем сообщения: {}", messageHistory);
+
 
         logger.info("Возвращаем {} сообщений для чата {}", messageHistory.size(), chatId);
         return ResponseEntity.ok(messageHistory);
     }
+
 
 
 }

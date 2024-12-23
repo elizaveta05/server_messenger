@@ -94,7 +94,7 @@ public class ChatsController {
 
         logger.info("Сообщение сохранено в чатах с ID: {} и {}", chatId1, chatId2);
 
-        return ResponseEntity.ok("Чаты и сообщения успешно созданы.");
+        return ResponseEntity.ok(message2);
     }
 
     @GetMapping("/getAllChatsForUser")
